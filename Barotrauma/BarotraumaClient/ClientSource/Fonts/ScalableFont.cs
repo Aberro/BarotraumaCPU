@@ -8,6 +8,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Barotrauma.Threading;
+using SharpDX.Direct2D1;
+using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
 namespace Barotrauma
 {
@@ -600,6 +602,9 @@ namespace Barotrauma
 
             int richTextDataIndex = 0;
             RichTextData currentRichTextData = richTextData.Value[richTextDataIndex];
+            Vector2? underlineFrom = null;
+            Vector2? striketrhoughFrom = null;
+            Color currentTextColor = default;
 
             for (int i = 0; i < text.Length; i++)
             {
@@ -608,10 +613,18 @@ namespace Barotrauma
                     out uint charIndex, out bool shouldContinue);
                 if (shouldContinue) { continue; }
 
-                Color currentTextColor;
-
                 while (currentRichTextData != null && i + rtdOffset > currentRichTextData.EndIndex + lineNum)
                 {
+                    if (striketrhoughFrom != null)
+                    {
+                        ShapeExtensions.DrawLine(sb, striketrhoughFrom.Value, currentPos + currentLineOffset, currentTextColor, 1);
+                        striketrhoughFrom = null;
+                    }
+                    if (underlineFrom != null)
+                    {
+                        ShapeExtensions.DrawLine(sb, underlineFrom.Value + new Vector2(0, baseHeight), currentPos + currentLineOffset + new Vector2(0, baseHeight), currentTextColor, 1);
+                        underlineFrom = null;
+                    }
                     richTextDataIndex++;
                     currentRichTextData = richTextDataIndex < richTextData.Value.Length ? richTextData.Value[richTextDataIndex] : null;
                 }
@@ -637,7 +650,12 @@ namespace Barotrauma
                     drawOffset.X = gd.DrawOffset.X * advanceUnit.X * scale.X - gd.DrawOffset.Y * advanceUnit.Y * scale.Y;
                     drawOffset.Y = gd.DrawOffset.X * advanceUnit.Y * scale.Y + gd.DrawOffset.Y * advanceUnit.X * scale.X;
 
-                    sb.Draw(tex, currentPos + currentLineOffset + drawOffset, gd.TexCoords, currentTextColor, rotation, origin, scale, se, layerDepth);
+                    var pos = currentPos + currentLineOffset;
+                    sb.Draw(tex, pos + drawOffset, gd.TexCoords, currentTextColor, rotation, origin, scale, se, layerDepth);
+                    if ((currentRichTextData?.Underline ?? false) && underlineFrom == null)
+                        underlineFrom = pos;
+                    if ((currentRichTextData?.Strikethrough ?? false) && striketrhoughFrom == null)
+                        striketrhoughFrom = pos;
                 }
                 currentPos += gd.Advance * advanceUnit * scale.X;
             }

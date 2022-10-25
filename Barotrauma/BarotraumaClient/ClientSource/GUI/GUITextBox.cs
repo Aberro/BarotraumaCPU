@@ -464,6 +464,10 @@ namespace Barotrauma
                 {
                     OnEnterPressed(this, Text);
                 }
+                if (PlayerInput.KeyDown(Keys.LeftShift) || PlayerInput.KeyDown(Keys.RightShift))
+                {
+                    isSelecting = true;
+                }
             }
             else if (Selected)
             {
@@ -683,7 +687,29 @@ namespace Barotrauma
                     {
                         InitSelectionStart();
                     }
-                    CaretIndex = Math.Max(CaretIndex - 1, 0);
+                    // word selection
+                    if (PlayerInput.KeyDown(Keys.LeftControl) || PlayerInput.KeyDown(Keys.RightControl))
+                    {
+                        var caret = CaretIndex-1;
+                        if (caret < Text.Length && caret > 0 && !Char.IsLetterOrDigit(Text[caret]))
+                            while(--caret >= 0 && !Char.IsLetterOrDigit(Text[caret])) { }
+                        if (caret > 0)
+                        {
+                            while (--caret >= 0)
+                            {
+                                if (!Char.IsLetterOrDigit(Text[caret]))
+                                {
+                                    caret++;
+                                    break;
+                                }
+                            }
+                        }
+                        CaretIndex = caret < 0 ? 0 : caret;
+                    }
+                    else
+                    {
+                        CaretIndex = Math.Max(CaretIndex - 1, 0);
+                    }
                     caretTimer = 0;
                     HandleSelection();
                     break;
@@ -692,7 +718,37 @@ namespace Barotrauma
                     {
                         InitSelectionStart();
                     }
-                    CaretIndex = Math.Min(CaretIndex + 1, Text.Length);
+                    // word selection
+                    if (PlayerInput.KeyDown(Keys.LeftControl) || PlayerInput.KeyDown(Keys.RightControl))
+                    {
+                        var caret = CaretIndex;
+                        if(caret < Text.Length && !Char.IsLetterOrDigit(Text[caret]))
+                            while(++caret < Text.Length && !Char.IsLetterOrDigit(Text[caret])) { }
+                        while (++caret < Text.Length && Char.IsLetterOrDigit(Text[caret])) { }
+                        CaretIndex = Math.Min(caret, Text.Length);
+                    }
+                    else
+                    {
+                        CaretIndex = Math.Min(CaretIndex + 1, Text.Length);
+                    }
+                    caretTimer = 0;
+                    HandleSelection();
+                    break;
+                case Keys.Home:
+                    if (isSelecting)
+                    {
+                        InitSelectionStart();
+                    }
+                    CaretIndex = 0;
+                    caretTimer = 0;
+                    HandleSelection();
+                    break;
+                case Keys.End:
+                    if (isSelecting)
+                    {
+                        InitSelectionStart();
+                    }
+                    CaretIndex = Text.Length;
                     caretTimer = 0;
                     HandleSelection();
                     break;

@@ -261,7 +261,27 @@ namespace Barotrauma
             }
         }
 
+        public class UnderlineSettings
+        {
+            public Color Color { get; set; } = GUIStyle.Red;
+            private int thickness;
+            private int expand;
+
+            public UnderlineSettings(Color? color = null, int thickness = 1, int expand = 0)
+            {
+                if (color != null) { Color = color.Value; }
+                this.thickness = thickness;
+                this.expand = expand;
+            }
+
+            public void Draw(SpriteBatch spriteBatch, float textSizeHalf, float xPos, float yPos)
+            {
+                ShapeExtensions.DrawLine(spriteBatch, new Vector2(xPos - textSizeHalf - expand, yPos), new Vector2(xPos + textSizeHalf + expand, yPos), Color, thickness);
+            }
+        }
+
         public StrikethroughSettings Strikethrough = null;
+        public UnderlineSettings Underline = null;
 
         public ImmutableArray<RichTextData>? RichTextData => text.RichTextData;
 
@@ -305,7 +325,7 @@ namespace Barotrauma
             this.textAlignment = textAlignment;
             this.Wrap = wrap;
             this.Text = text ?? "";
-            if (rectT.Rect.Height == 0 && !text.IsNullOrEmpty())
+            if (rectT.Rect.Height == 0 && !text.IsNull())
             {
                 CalculateHeightFromText();
             }
@@ -599,12 +619,14 @@ namespace Barotrauma
                     {
                         RichTextData.Value.ForEach(rt => rt.Alpha = currentTextColor.A / 255.0f);
                     }
+
                     Font.DrawStringWithColors(spriteBatch, Censor ? censoredText : (Wrap ? wrappedText : text.SanitizedString).Value, pos,
                         currentTextColor * (currentTextColor.A / 255.0f), 0.0f, origin, TextScale, SpriteEffects.None, textDepth, RichTextData.Value, alignment: textAlignment, forceUpperCase: ForceUpperCase);
                 }
-
                 Strikethrough?.Draw(spriteBatch, (int)Math.Ceiling(TextSize.X / 2f), pos.X,
-                    /* TODO: ???? */ForceUpperCase == ForceUpperCase.Yes ? pos.Y : pos.Y + GUI.Scale * 2f);
+                    ForceUpperCase == ForceUpperCase.Yes ? pos.Y : pos.Y + GUI.Scale * 2f);
+                Underline?.Draw(spriteBatch, (int)Math.Ceiling(TextSize.X / 2f), pos.X,
+                    ForceUpperCase == ForceUpperCase.Yes ? pos.Y : pos.Y + GUI.Scale * 2f);
             }
 
             if (overflowClipActive)

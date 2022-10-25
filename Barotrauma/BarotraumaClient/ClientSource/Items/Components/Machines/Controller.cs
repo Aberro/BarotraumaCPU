@@ -75,7 +75,8 @@ namespace Barotrauma.Items.Components
                 PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(limbPos);
 
                 PropertyDescriptor limbPosProperty = properties.Find("Position", false);
-                editor.CreateVector2Field(limbPos, new SerializableProperty(limbPosProperty), limbPos.Position, limbPos.LimbType.ToString(), "");
+                SerializableProperty serializableProperty = new SerializableProperty(limbPosProperty);
+                editor.CreateVector2Field(limbPos, serializableProperty, serializableProperty.GetAttribute<Editable>(), limbPos.Position, limbPos.LimbType.ToString(), "");
             }
         }
 #endif

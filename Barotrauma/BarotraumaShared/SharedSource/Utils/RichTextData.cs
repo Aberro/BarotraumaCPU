@@ -9,6 +9,8 @@ namespace Barotrauma
         public int StartIndex, EndIndex;
         public Color? Color;
         public string Metadata;
+        public bool Underline;
+        public bool Strikethrough;
 
         public float Alpha = 1.0f;
 
@@ -19,6 +21,8 @@ namespace Barotrauma
 
         private const string colorDefinition = "color";
         private const string metadataDefinition = "metadata";
+        private const string underlineDefinition = "u";
+        private const string StriketrhoughDefinition = "s";
         private const string endDefinition = "end";
 
         public static ImmutableArray<RichTextData>? GetRichTextData(string text, out string sanitizedText)
@@ -76,6 +80,16 @@ namespace Barotrauma
                             {
                                 if (tempData == null) { tempData = new RichTextData(); }
                                 tempData.Metadata = attributes[j].Substring(attributes[j].IndexOf(keyValueSeparator) + 1);
+                            }
+                            else if (attributes[j].Equals(underlineDefinition, System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                if(tempData == null) { tempData = new RichTextData(); }
+                                tempData.Underline = true;
+                            }
+                            else if (attributes[j].Equals(StriketrhoughDefinition, System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (tempData == null) { tempData = new RichTextData(); }
+                                tempData.Strikethrough = true;
                             }
                         }
                     }

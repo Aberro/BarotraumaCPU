@@ -828,6 +828,12 @@ namespace Barotrauma
                         }
                     }
                 }
+#if CLIENT
+                else if (GUIStyle.Colors.TryGetValue(stringColor.ToIdentifier(), out GUIColor guiColor))
+                {
+                    return guiColor.Value;
+                }
+#endif
 
                 if (altParseFailed)
                 {

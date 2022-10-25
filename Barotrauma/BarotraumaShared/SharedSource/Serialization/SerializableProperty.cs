@@ -40,6 +40,11 @@ namespace Barotrauma
         /// </summary>
         public bool ReadOnly;
 
+        /// <summary>
+        /// Commands used for value editing. Must correspond to method names in editing entity, with signature of Action.
+        /// </summary>
+        public string[] CommandNames;
+
         public Editable(int maxLength = 20)
         {
             MaxLength = maxLength;
@@ -56,6 +61,11 @@ namespace Barotrauma
             MinValueFloat = minValue;
             MaxValueFloat = maxValue;
             DecimalCount = decimals;
+        }
+
+        public Editable(params string[] commands)
+        {
+            CommandNames = commands;
         }
     }
 

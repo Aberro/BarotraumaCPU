@@ -7,13 +7,16 @@ namespace Barotrauma
     static class StringExtensions
     {
         public static string FallbackNullOrEmpty(this string s, string fallback) => string.IsNullOrEmpty(s) ? fallback : s;
-        
+        public static bool IsNull([NotNullWhen(returnValue: false)] this string? s) => s is null;
         public static bool IsNullOrEmpty([NotNullWhen(returnValue: false)]this string? s) => string.IsNullOrEmpty(s);
         public static bool IsNullOrWhiteSpace([NotNullWhen(returnValue: false)]this string? s) => string.IsNullOrWhiteSpace(s);
+        public static bool IsNull([NotNullWhen(returnValue: false)] this ContentPath? s) => s is null;
         public static bool IsNullOrEmpty([NotNullWhen(returnValue: false)]this ContentPath? p) => p?.IsNullOrEmpty() ?? true;
         public static bool IsNullOrWhiteSpace([NotNullWhen(returnValue: false)]this ContentPath? p) => p?.IsNullOrWhiteSpace() ?? true;
+        public static bool IsNull([NotNullWhen(returnValue: false)] this LocalizedString? s) => s is null;
         public static bool IsNullOrEmpty([NotNullWhen(returnValue: false)]this LocalizedString? s) => s is null || string.IsNullOrEmpty(s.Value);
         public static bool IsNullOrWhiteSpace([NotNullWhen(returnValue: false)]this LocalizedString? s) => s is null || string.IsNullOrWhiteSpace(s.Value);
+        public static bool IsNull([NotNullWhen(returnValue: false)]this RichString? s) => s is null;
         public static bool IsNullOrEmpty([NotNullWhen(returnValue: false)]this RichString? s) => s is null || s.NestedStr.IsNullOrEmpty();
         public static bool IsNullOrWhiteSpace([NotNullWhen(returnValue: false)]this RichString? s) => s is null || s.NestedStr.IsNullOrWhiteSpace();
 
